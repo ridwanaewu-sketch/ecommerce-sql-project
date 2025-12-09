@@ -1,0 +1,5 @@
+Dataset Source:
+
+- This project uses **generated sample data** for learning and demonstration purposes.
+- The dataset includes customers, products, orders, and order items to simulate a real e-commerce environment.
+- No real company data is used.
