@@ -1,0 +1,51 @@
+USE ecommerce_project;
+
+-- 1. Check for duplicates in customers
+SELECT name, email, COUNT(*)
+FROM customers
+GROUP BY name, email
+HAVING COUNT(*) > 1;
+
+-- 2. Check for missing values
+SELECT *
+FROM customers
+WHERE name IS NULL OR email IS NULL OR signup_date IS NULL;
+
+SELECT *
+FROM products
+WHERE product_name IS NULL OR price IS NULL;
+
+-- 3. Standardize category names
+UPDATE products
+SET category = 'Electronics'
+WHERE category IN ('electronics', 'ELECTRONICS');
+
+UPDATE products
+SET category = 'Fashion'
+WHERE category IN ('fashion', 'FASHION');
+
+-- 4. Remove invalid prices
+DELETE FROM products
+WHERE price <= 0;
+
+-- 5. Fix inconsistent signup dates (if someone accidentally entered future dates)
+UPDATE customers
+SET signup_date = '2023-01-01'
+WHERE signup_date > CURDATE();
+
+-- 6. Ensure total_amount in orders matches order_items sum
+UPDATE orders o
+JOIN (
+    SELECT order_id, SUM(quantity * unit_price) AS calc_total
+    FROM order_items
+    GROUP BY order_id
+) x ON o.order_id = x.order_id
+SET o.total_amount = x.calc_total;
+
+-- 7. Remove orders linked to missing customers (orphan records)
+DELETE FROM orders
+WHERE customer_id NOT IN (SELECT customer_id FROM customers);
+
+-- 8. Remove order items linked to missing products
+DELETE FROM order_items
+WHERE product_id NOT IN (SELECT product_id FROM products);
