@@ -1,8 +1,0 @@
-USE ecommerce_project;
-
-SELECT 
-    DATE_FORMAT(order_date, '%Y-%m') AS month,
-    SUM(total_amount) AS revenue
-FROM orders
-GROUP BY month
-ORDER BY month;
